@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listening B1 - Final Term 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        header {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 25px 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .player-section {
+            padding: 30px 20px;
+        }
+        
+        .player-controls {
+            margin: 20px 0;
+        }
+        
+        .play-button {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .play-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 0, 224, 0.4);
+        }
+        
+        .play-button:active {
+            transform: translateY(1px);
+        }
+        
+        .play-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #4a00e0;
+            font-weight: 500;
+            min-height: 24px;
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #4a00e0;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .play-button {
+                padding: 12px 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Listening B1 - Final Term 1</h1>
+            <div class="subtitle">Friday November 21st 2025</div>
+        </header>
+        
+        <div class="player-section">
+            <div class="player-controls">
+                <button id="playButton" class="play-button">START</button>
+                <div id="status" class="status"></div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>Instruction</h3>
+            <p>Press the "START" button to play the listening test. It will play only once from beginning to end and cannot be skipped, stopped, or paused.</p>
+        </div>
+    </div>
+
+    <!-- Audio element ẩn -->
+    <audio id="audioPlayer" preload="auto">
+        <source src="file-nghe.mp3" type="audio/mpeg">
+        Your browser does not support MP3 audio playback.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playButton = document.getElementById('playButton');
+            const status = document.getElementById('status');
+            
+            // Ẩn điều khiển mặc định của trình duyệt
+            audioPlayer.controls = false;
+            
+            // Sự kiện khi nhấn nút phát
+            playButton.addEventListener('click', function() {
+                audioPlayer.play()
+                    .then(() => {
+                        status.textContent = "Playing...";
+                        playButton.disabled = true;
+                        playButton.textContent = "PLAYING";
+                    })
+                    .catch(error => {
+                        status.textContent = "Error: Unable to play audio. Please try again.";
+                        console.error("Audio playback error:", error);
+                    });
+            });
+            
+            // Ngăn chặn tua
+            audioPlayer.addEventListener('seeking', function(e) {
+                // Quay lại thời điểm hiện tại trước khi người dùng cố tua
+                audioPlayer.currentTime = currentPlayTime;
+            });
+            
+            // Ngăn chặn dừng
+            audioPlayer.addEventListener('pause', function(e) {
+                // Tiếp tục phát nếu người dùng cố dừng
+                audioPlayer.play();
+            });
+            
+            // Theo dõi thời gian phát hiện tại
+            let currentPlayTime = 0;
+            audioPlayer.addEventListener('timeupdate', function() {
+                currentPlayTime = audioPlayer.currentTime;
+            });
+            
+            // Khi nhạc kết thúc
+            audioPlayer.addEventListener('ended', function() {
+                status.textContent = "The test has ended.";
+                playButton.textContent = "DONE!";
+            });
+            
+            // Xử lý lỗi
+            audioPlayer.addEventListener('error', function() {
+                status.textContent = "Error: Unable to load the audio file. Please check the file path.";
+                playButton.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>
